@@ -1,10 +1,11 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+
 public class RayShooter : MonoBehaviour
 {
     private Camera cam;
-    void Start()
+
+    private void Start()
     {
         cam = GetComponent<Camera>();
 
@@ -12,14 +13,15 @@ public class RayShooter : MonoBehaviour
         Cursor.visible = false;
     }
 
-    void OnGUI()
+    private void OnGUI()
     {
         int size = 12;
         float posX = cam.pixelWidth / 2 - size / 4;
         float posY = cam.pixelHeight / 2 - size / 2;
         GUI.Label(new Rect(posX, posY, size, size), "*");
     }
-    void Update()
+
+    private void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
@@ -28,25 +30,27 @@ public class RayShooter : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                StartCoroutine(SphereIndicator(hit.point));
+                StartCoroutine(HandleHit(hit));
             }
         }
+    }
 
-        if (Physics.Raycast(ray, out hit)) {
-            GameObject hitObject = hitObject.transform.gameObject;
-            ReactiveTarget target = hitObject.GetComponent<ReactiveTarget>();
-            if (target !=null) {
-                Debug.Log("Target hit");
-            } else {
-                StartCoroutine(SphereIndicator(hitObject.point));
-            }         
-        }
-        if (target != null) {
+    private IEnumerator HandleHit(RaycastHit hit)
+    {
+        GameObject hitObject = hit.transform.gameObject;
+        ReactiveTarget target = hitObject.GetComponent<ReactiveTarget>();
+        if (target != null)
+        {
+            Debug.Log("Target hit");
             target.ReactToHit();
-        } else {
+        }
+        else
+        {
             StartCoroutine(SphereIndicator(hit.point));
         }
+        yield return null;
     }
+
     private IEnumerator SphereIndicator(Vector3 pos)
     {
         GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
